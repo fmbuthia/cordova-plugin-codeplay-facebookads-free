@@ -123,7 +123,7 @@ public class codeplayfacebookads extends CordovaPlugin {
             return true;
 
         }
-		
+
         if (action.equals("loadInterstitialAds")) {
 
 
@@ -179,15 +179,7 @@ public class codeplayfacebookads extends CordovaPlugin {
         }
 
 
-
-
-
         if (action.equals("loadRewardVideoAd")) {
-
-
-
-
-
 
             String isTesting;
             String videoid;
@@ -238,8 +230,8 @@ public class codeplayfacebookads extends CordovaPlugin {
             if(isRewardVideoLoad)
             {
                 //interstitialAd.show();
-				rewardedVideoAd.show();
-				isRewardVideoLoad = false;
+                rewardedVideoAd.show();
+                isRewardVideoLoad = false;
                 //callbackContext.success("Facebook interstitial Ads Loaded");
             }
             else
@@ -255,12 +247,14 @@ public class codeplayfacebookads extends CordovaPlugin {
     private void facebookRewardVideoAds(CallbackContext callbackContext)
     {
 
-        rewardedVideoAd.setAdListener(new RewardedVideoAdListener() {
+
+
+        RewardedVideoAdListener rewardedVideoAdListener = new RewardedVideoAdListener() {
             @Override
             public void onError(Ad ad, AdError error) {
                 // Rewarded video ad failed to load
                 //Log.e(TAG, "Rewarded video ad failed to load: " + error.getErrorMessage());
-				isRewardVideoLoad = false;
+                isRewardVideoLoad = false;
                 callbackContext.error("Rewarded video ad failed to load: " + error.getErrorMessage());
             }
 
@@ -269,11 +263,11 @@ public class codeplayfacebookads extends CordovaPlugin {
                 // Rewarded video ad is loaded and ready to be displayed
                 //Log.d(TAG, "Rewarded video ad is loaded and ready to be displayed!");
                 //callbackContext.success("Rewarded video ad is loaded and ready to be displayed!");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, "AdLoaded");				
-				result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
-               // rewardedVideoAd.show();
-			   isRewardVideoLoad = true;
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdLoaded");
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
+                // rewardedVideoAd.show();
+                isRewardVideoLoad = true;
             }
 
             @Override
@@ -281,21 +275,19 @@ public class codeplayfacebookads extends CordovaPlugin {
                 // Rewarded video ad clicked
                 //Log.d(TAG, "Rewarded video ad clicked!");
                 //callbackContext.error("Rewarded video ad clicked!");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, "AdClicked");				
-				result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
-
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdClicked");
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
             }
 
             @Override
             public void onLoggingImpression(Ad ad) {
                 // Rewarded Video ad impression - the event will fire when the
                 // video starts playing
-                //Log.d(TAG, "Rewarded video ad impression logged!");
                 //callbackContext.success("Rewarded video ad impression logged!");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, "AdPlaying");				
-				result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdPlaying");
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
             }
 
             @Override
@@ -305,9 +297,9 @@ public class codeplayfacebookads extends CordovaPlugin {
                 //Log.d(TAG, "Rewarded video completed!");
 
                 //callbackContext.success("Rewarded video completed!");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, "AdCompleted");				
-				result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdCompleted");
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
                 // Call method to give reward
                 // giveReward();
             }
@@ -318,14 +310,15 @@ public class codeplayfacebookads extends CordovaPlugin {
                 // by closing the app, or closing the end card.
                 //Log.d(TAG, "Rewarded video ad closed!");
                 //callbackContext.success("Rewarded video ad closed!");
-				PluginResult result = new PluginResult(PluginResult.Status.OK, "AdClosed");				
-				//result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdClosed");
+                //result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
             }
-        });
-        rewardedVideoAd.loadAd();
-
-
+        };
+        rewardedVideoAd.loadAd(
+                rewardedVideoAd.buildLoadAdConfig()
+                        .withAdListener(rewardedVideoAdListener)
+                        .build());
     }
 
 
@@ -333,135 +326,144 @@ public class codeplayfacebookads extends CordovaPlugin {
     private void facebookBannerAdsShow(CallbackContext callbackContext)
     {
 
-
-
-
-        facebookadView.setAdListener(new AdListener() {
+        AdListener adListener = new AdListener() {
             @Override
             public void onError(Ad ad, AdError adError) {
+                // Ad error callback
                 callbackContext.error(adError.getErrorMessage());
             }
 
             @Override
             public void onAdLoaded(Ad ad) {
+                // Ad loaded callback
                 callbackContext.success("Facebook banner Ads loaded");
 
 
+                try {
 
-                cordova.getActivity().runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
+                    cordova.getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
 
 
-                        View viewfacebook = webView.getView();
-                        ViewGroup facebookwvParentView = (ViewGroup) viewfacebook.getParent();
-                        if (facebookparentView == null) {
-                            facebookparentView = new LinearLayout(webView.getContext());
+                            View viewfacebook = webView.getView();
+                            ViewGroup facebookwvParentView = (ViewGroup) viewfacebook.getParent();
+                            if (facebookparentView == null) {
+                                facebookparentView = new LinearLayout(webView.getContext());
+                            }
+
+
+                            if (facebookwvParentView != null && facebookwvParentView != facebookparentView) {
+                                ViewGroup facebookrootView = (ViewGroup) (viewfacebook.getParent());
+                                facebookwvParentView.removeView(viewfacebook);
+                                ((LinearLayout) facebookparentView).setOrientation(LinearLayout.VERTICAL);
+                                facebookparentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0.0F));
+                                viewfacebook.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0F));
+                                facebookparentView.addView(viewfacebook);
+                                facebookrootView.addView(facebookparentView);
+                            }
+
+                            facebookparentView.addView(facebookadView);
+                            facebookparentView.bringToFront();
+                            facebookparentView.requestLayout();
+                            facebookparentView.requestFocus();
+
                         }
+                    });
 
-
-                        if (facebookwvParentView != null && facebookwvParentView != facebookparentView) {
-                            ViewGroup facebookrootView = (ViewGroup)(viewfacebook.getParent());
-                            facebookwvParentView.removeView(viewfacebook);
-                            ((LinearLayout) facebookparentView).setOrientation(LinearLayout.VERTICAL);
-                            facebookparentView.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 0.0F));
-                            viewfacebook.setLayoutParams(new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT, 1.0F));
-                            facebookparentView.addView(viewfacebook);
-                            facebookrootView.addView(facebookparentView);
-                        }
-
-                        facebookparentView.addView(facebookadView);
-                        facebookparentView.bringToFront();
-                        facebookparentView.requestLayout();
-                        facebookparentView.requestFocus();
-
-                    }
-                });
-
-
-
-
-
+                }
+                catch (RuntimeException e){
+                    callbackContext.error("Runtime exception found");
+                }
 
 
             }
 
             @Override
             public void onAdClicked(Ad ad) {
+                // Ad clicked callback
                 callbackContext.success("Facebook banner Ads clicked");
             }
 
             @Override
             public void onLoggingImpression(Ad ad) {
+                // Ad impression logged callback
                 callbackContext.success("Facebook Ads impression logged");
             }
-        });
+        };
 
         // Request an ad
-        facebookadView.loadAd();
+        facebookadView.loadAd(facebookadView.buildLoadAdConfig().withAdListener(adListener).build());
     }
 
 
     private void facebookInterstitialAdsLoad(CallbackContext callbackContext)
     {
-        interstitialAd.setAdListener(new InterstitialAdListener() {
+
+        InterstitialAdListener interstitialAdListener = new InterstitialAdListener() {
             @Override
-            public void onInterstitialDisplayed(Ad ad) {                
-				isInterstitialLoad=false;
+            public void onInterstitialDisplayed(Ad ad) {
+                // Interstitial ad displayed callback
+                isInterstitialLoad=false;
                 // callbackContext.success("Facebook interstitial Ads displayed.");
-                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdDisplayed");				
-				result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdDisplayed");
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
             }
 
             @Override
             public void onInterstitialDismissed(Ad ad) {
+                // Interstitial dismissed callback
                 // callbackContext.success("Facebook interstitial Ads dismissed");
-                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdClosed");				
-				//result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdClosed");
+                //result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
             }
 
             @Override
             public void onError(Ad ad, AdError adError) {
-				isInterstitialLoad=false;
+                // Ad error callback
+                isInterstitialLoad=false;
                 callbackContext.error("Facebook interstitial Ads failed to load: " + adError.getErrorMessage());
             }
 
             @Override
             public void onAdLoaded(Ad ad) {
-				isInterstitialLoad=true;
-                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdLoaded");				
-				result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
+                // Interstitial ad is loaded and ready to be displayed
+                isInterstitialLoad=true;
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdLoaded");
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
             }
 
             @Override
             public void onAdClicked(Ad ad) {
+                // Ad clicked callback
                 // callbackContext.success("Facebook interstitial Ads clicked!");
-                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdClicked");				
-				result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdClicked");
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
             }
 
             @Override
             public void onLoggingImpression(Ad ad) {
-                // callbackContext.success("Facebook interstitial Ads impression logged!");
-                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdLogged");				
-				result.setKeepCallback(true);
-				callbackContext.sendPluginResult(result);
+                // Ad impression logged callback
+                PluginResult result = new PluginResult(PluginResult.Status.OK, "AdLogged");
+                result.setKeepCallback(true);
+                callbackContext.sendPluginResult(result);
             }
-        });
+
+
+        };
 
         // For auto play video ads, it's recommended to load the ad
         // at least 30 seconds before it is shown
-        interstitialAd.loadAd();
+        interstitialAd.loadAd(
+                interstitialAd.buildLoadAdConfig()
+                        .withAdListener(interstitialAdListener)
+                        .build());
+
     }
-
-
-
-
-
 
 
 
